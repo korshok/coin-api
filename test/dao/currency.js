@@ -3,6 +3,7 @@
 /*jshint -W030*/
 
 const db = require('../../src/db/connection');
+const Currency = require('../../src/server/classes/Currency');
 const chai = require('chai');
 const chaiAsPromised = require('chai-as-promised');
 const chaiHttp = require('chai-http');
@@ -14,35 +15,44 @@ const currency = require('../../src/server/dao/currency');
 
 const tests = () => {
 
-  describe('BITTREX API: https://bittrex.com/api/v1.1/public/getticker',() => {
+  describe.only('BITTREX API: https://bittrex.com/api/v1.1/public/getticker',() => {
 
     let result;
-    const currencyPair = "USDT-ETH";
+    const currencyCode = "ETH";
 
     before((done) => {
-      result = currency.getCurrencyFromBittrex(currencyPair);
+      result = currency.getCurrencyFromBittrex(currencyCode);
       done()
     });
 
     it('should create and return instance of the currency class', () => {
-      result.should.eventually.be.a.instanceof(Currency);
+      return result.should.eventually.be.an.instanceof(Currency);
     });
 
     it('should return a Currency class with the \'name\' property', () => {
-      result.should.eventually.have.property('name').should.be.defined
+      return result.should.eventually.have.property('name').that.is.exists;
     });
 
     it('should return a Currency class with the \'abbreviation\' property', () => {
-      result.should.eventually.have.property('abbreviation').should.be.defined
+      return result.should.eventually.have.property('abbreviation').that.is.exists;
     });
 
     it('should return a Currency class with the \'USDValueInPennies\' property', () => {
-      result.should.eventually.have.property('USDValueInPennies').should.be.defined
+      return result.should.eventually.have.property('USDValueInPennies').that.is.exists
     });
 
-    it('should create a valid currency class', () => {
-      result.should.eventually.be.a.instanceof(Currency);
+    // HEADUP - usig done call back here b/c i needed access to the return value
+    it('should create a valid currency class', (done) => {
+      result.then((currency) => {
+        currency.validate().isValid.should.be.true
+        done()
+      })
+      .catch(done)
     });
 
   });
+}
+
+if (process.env.NODE_ENV === 'test') {
+  module.exports = tests;
 }

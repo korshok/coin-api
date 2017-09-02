@@ -13,7 +13,7 @@ const currencyFixture = {
 
 
 const tests = function() {
-  describe.only('Currency Class', () => {
+  describe('Currency Class', () => {
 
     it('should create a new class', (done) => {
       const currency = new Currency();
