@@ -1,7 +1,7 @@
 const moment = require('moment');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
-const knex = require('../../db/connection');
+const db = require('../../db/connection');
 
 const auth = {
 
@@ -46,9 +46,9 @@ const auth = {
     var token = header[1];
     auth.decodeToken(token)
       .then((payload) => {
-        return knex('Users').where({id: parseInt(payload.sub)}).first()
+        return db.users.findOne({_id: payload.sub})
           .then((user) => {
-            req.user = {id: user.id};
+            req.user = {_id: user.id};
             next();
           });
       })
@@ -65,12 +65,13 @@ const auth = {
         .then(() => {
           const salt = bcrypt.genSaltSync();
           const hash = bcrypt.hashSync(user.password, salt);
-          knex('Users').insert({
+          new db.user({
             username: user.username,
             password: hash
-          }, '*')
-            .then(resolve)
-            .catch(reject);
+          })
+          .save()
+          .then(resolve)
+          .catch(reject);
         })
         .catch(reject);
     });
@@ -80,10 +81,10 @@ const auth = {
     return this.handleUserErrors(user).then(() => {
       const salt = bcrypt.genSaltSync();
       const hash = bcrypt.hashSync(user.password, salt);
-      return knex('Users').where({id: id}).update({
+      return db.users.findOneAndUpdate({id: id}, {
         username: user.username,
         password: hash
-      }, '*');
+      });
     });
   },
 
@@ -107,7 +108,7 @@ const auth = {
 
   registerUser(req, res, next) {
     auth.createUser(req.body.user)
-      .then((user) => { return auth.encodeToken(user[0]); })
+      .then((user) => { return auth.encodeToken(user); })
       .then((token) => {
         res.status(200).json({
           message: `Success. '${req.body.user.username}' has been created.`,
@@ -126,7 +127,7 @@ const auth = {
   login(req, res, next) {
     const username = req.body.user.username;
     const password = req.body.user.password;
-    return knex('Users').where({username}).first()
+    return db.users.findOne({username})
     .then((user) => {
       auth.comparePass(password, user.password);
       return user;
@@ -144,7 +145,7 @@ const auth = {
   },
 
   getCurrentUser(req, res) {
-    knex('Users').where({id: parseInt(req.user.id)}).first()
+    db.users.findOne({id: parseInt(req.user.id)})
     .then((user) => {
       let result = Object.assign({}, user);
       delete result.password;

@@ -2,7 +2,7 @@
 /*jshint -W079*/
 /*jshint -W030*/
 
-const knex = require('../../src/db/connection');
+const db = require('../../src/db/connection');
 const chai = require('chai');
 const chaiAsPromised = require('chai-as-promised');
 const chaiHttp = require('chai-http');

@@ -4,7 +4,7 @@
 
 process.env.NODE_ENV = 'test';
 
-const knex = require('../../../src/db/connection');
+const db = require('../../../src/db/connection');
 const chai = require('chai');
 const should = chai.should();
 const expect = chai.expect;
@@ -23,7 +23,7 @@ const tests = () => {
       });
 
       afterEach((done) => {
-        knex('Users').del().then(() => {
+        db.user.remove().then(() => {
           done();
         });
       });
@@ -65,7 +65,7 @@ const tests = () => {
       });
 
       after((done) => {
-        knex('Users').del().then(() => {
+        db.user.remove().then(() => {
           done();
         });
       });
@@ -76,7 +76,7 @@ const tests = () => {
       });
 
       it('should create a new user', (done) => {
-        knex('Users').then((users) => {
+        db.user.find().then((users) => {
           users.length.should.equal(1);
           users[0].username.should.equal('user123');
           expect(users[0].id).to.exist;

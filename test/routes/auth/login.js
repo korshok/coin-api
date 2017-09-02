@@ -4,7 +4,7 @@
 
 process.env.NODE_ENV = 'test';
 
-const knex = require('../../../src/db/connection');
+const db = require('../../../src/db/connection');
 const chai = require('chai');
 const should = chai.should();
 const expect = chai.expect;
@@ -58,7 +58,7 @@ const tests = () => {
       });
 
       after((done) => {
-        knex('Users').del().then(() => {
+        db.user.remove().then(() => {
           done();
         });
       });
