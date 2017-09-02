@@ -26,9 +26,9 @@ endpoints:
 
 coin/getBestRate?market=<coin_pair> //ex: BTC_LTE
   1. ~~create js class to format data~~
-  1. get prices from:
+  1. ~~get prices from:
     - https://bittrex.com/api/v1.1/public/getticker?market=<type> // will need to call per currency pair
-    - https://poloniex.com/public?command=returnOrderBook&currencyPair=BTC_NXT&depth=10 // will need to call per currency           
-  1. convert API results into Currency Classes
+    - https://poloniex.com/public?command=returnOrderBook&currencyPair=BTC_NXT&depth=10 // will need to call per currency~~        
+  1. ~~convert API results into Currency Classes~~
   1. compare rates
   1. return best rate and which exchange to get it from
