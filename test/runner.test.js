@@ -1,7 +1,21 @@
 const authRoutes = require('./routes/auth/auth');
-const authHelpers = require('./dao/auth');
+const authDao = require('./dao/auth');
 const currencyClass = require('./unit/currencyClass');
 
+////////////////////////////////
+// ROUTE (INTEGRATION) TESTS //
+//////////////////////////////
+
 authRoutes();
-authHelpers();
+
+////////////////
+// DAO TESTS //
+//////////////
+
+authDao();
+
+/////////////////
+// UNIT TESTS //
+///////////////
+
 currencyClass();
