@@ -30,15 +30,15 @@ const tests = () => {
     });
 
     it('should return a Currency class with the \'name\' property', () => {
-      return result.should.eventually.have.property('name').that.is.exists;
+      return result.should.eventually.have.property('name').that.exists;
     });
 
     it('should return a Currency class with the \'abbreviation\' property', () => {
-      return result.should.eventually.have.property('abbreviation').that.is.exists;
+      return result.should.eventually.have.property('abbreviation').that.exists;
     });
 
     it('should return a Currency class with the \'USDValueInPennies\' property', () => {
-      return result.should.eventually.have.property('USDValueInPennies').that.is.exists
+      return result.should.eventually.have.property('USDValueInPennies').that.exists
     });
 
     // HEADUP - usig done call back here b/c i needed access to the return value
