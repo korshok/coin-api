@@ -27,13 +27,9 @@ module.exports = _this = {
         const data = result.data;
         data.abbreviation = currencyCode;
         data.name = currencyAbbrToNameMap.get(currencyCode);
-        // console.log(data);
         resolve(new BittrexCurrency(data));
       })
-      .catch((err) => {
-        // TODO handle Error
-        reject(err);
-      });
+      .catch(reject);
 
     });
   },
@@ -50,10 +46,7 @@ module.exports = _this = {
         data.name = currencyAbbrToNameMap.get(currencyCode);
         resolve(new PoloniexCurrency(data));
       })
-      .catch((err) => {
-        // TODO handle Error
-        reject(err);
-      });
+      .catch(reject);
 
     });
   },

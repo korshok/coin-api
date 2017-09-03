@@ -33,7 +33,7 @@ currency/getLowestRate/<CURRENCY_CODE> //ex: BTC
   1. ~~convert API results into Currency Classes~~
   1. ~~compare rates~~
   1. ~~route that takes a currency, return best rate and which exchange to get it from~~
-  1. set up travis CI
+  1. ~~set up travis CI~~
   1. make readme documentation
     1. basics of code base
     1. basics of functionality
