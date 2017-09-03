@@ -22,9 +22,10 @@ display results in web page
 
 ## The plan:
 
-endpoints:
+endpoint:
 
-coin/getBestRate?market=<coin_pair> //ex: BTC_LTE
+currency/getLowestRate/<CURRENCY_CODE> //ex: BTC
+
   1. ~~create js class to format data~~
   1. ~~get prices from:
     - https://bittrex.com/api/v1.1/public/getticker?market=<type> // will need to call per currency pair
@@ -32,3 +33,9 @@ coin/getBestRate?market=<coin_pair> //ex: BTC_LTE
   1. ~~convert API results into Currency Classes~~
   1. ~~compare rates~~
   1. ~~route that takes a currency, return best rate and which exchange to get it from~~
+  1. set up travis CI
+  1. make readme documentation
+    1. basics of code base
+    1. basics of functionality
+    1. document route
+    1. instruction for getting setup locally
