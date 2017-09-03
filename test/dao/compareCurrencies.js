@@ -35,20 +35,25 @@ const tests = () => {
       done();
     });
 
-    xit('should throw if no currencies are pass', () => {
+    it('should reject if nothing is pass', () => {
+      const result = currency.compareCurrencies();
+      return result.should.be.rejected;
+    });
+
+    it('should reject if no currencies are pass', () => {
       const result = currency.compareCurrencies([]);
       return result.should.be.rejected;
     });
 
-    xit('should throw if currencies passed are not of the Currency Class', () => {
+    it('should reject if currencies passed are not of the Currency Class', () => {
       const result = currency.compareCurrencies([
-        nonCurrency,
-        validEtheriumLow
+        fixtures.nonCurrency,
+        fixtures.validEtheriumLow
       ]);
       return result.should.be.rejected;
     });
 
-    xit('should throw if currencies are not the same type', () => {
+    it('should reject if currencies are not the same type', () => {
       const result = currency.compareCurrencies([
         fixtures.validDash,
         fixtures.validEtheriumLow
@@ -56,42 +61,67 @@ const tests = () => {
       return result.should.be.rejected;
     });
 
-    xit('should return the currenciy if only one currency is passed', () => {
+    it('should return the currency if only one currency is passed', (done) => {
       const result = currency.compareCurrencies([
         fixtures.validEtheriumHigh
       ]);
-      return result[0].should.eventualy.deep.equal(fixtures.validEtheriumHigh);
+      result
+      .then((currencies) => {
+        currencies.length.should.equal(1);
+        currencies[0].should.deep.equal(fixtures.validEtheriumHigh);
+        done();
+      })
+      .catch(done);
     });
 
-    xit('should return the lowest price currency', () => {
+    it('should return the lowest price currency', (done) => {
       const result = currency.compareCurrencies([
         fixtures.validEtheriumLow,
         fixtures.validEtheriumHigh
       ]);
-      return result[0].should.eventualy.deep.equal(fixtures.validEtheriumLow);
+      result
+      .then((currencies) => {
+        currencies.length.should.equal(1);
+        currencies[0].should.deep.equal(fixtures.validEtheriumLow);
+        done();
+      })
+      .catch(done);
     });
 
-    xit('should return the lowest price currency', () => {
+    it('should return the lowest price currency', (done) => {
       const result = currency.compareCurrencies([
         fixtures.validEtheriumLow,
         fixtures.validEtheriumMed,
         fixtures.validEtheriumHigh
       ]);
-      return result[0].should.eventualy.deep.equal(fixtures.validEtheriumLow);
+      result
+      .then((currencies) => {
+        currencies.length.should.equal(1);
+        currencies[0].should.deep.equal(fixtures.validEtheriumLow);
+        done();
+      })
+      .catch(done);
     });
 
-    xit('should return multiple currencies if there are 2 or more at lowest prices', () => {
+    // TODO - test depends on the results coming back in order ==> brittle...fix
+    it('should return multiple currencies if there are 2 or more at lowest prices', (done) => {
       const result = currency.compareCurrencies([
         fixtures.validEtheriumLow,
         fixtures.validEtheriumHigh,
         fixtures.validEtheriumLowDuplicate
       ]);
-      return Promise.all([
-        result[0].should.eventualy.deep.equal(fixtures.validEtheriumLow),
-        result[1].should.eventualy.deep.equal(fixtures.validEtheriumLowDuplicate)
-      ]);
+      result.then((currencies) => {
+        currencies[0].should.deep.equal(fixtures.validEtheriumLow);
+        currencies[1].should.deep.equal(fixtures.validEtheriumLowDuplicate);
+        done();
+      })
+      .catch(done);
     });
 
   });
 
 };
+
+if (process.env.NODE_ENV === 'test') {
+  module.exports = tests;
+}

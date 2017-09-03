@@ -1,3 +1,5 @@
+/*jshint -W030*/
+
 const Currency = require('../classes/Currency');
 const BittrexCurrency = require('../classes/BittrexCurrency');
 const PoloniexCurrency = require('../classes/PoloniexCurrency');
@@ -55,7 +57,40 @@ module.exports = {
     });
   },
 
-  compareCurrencies: (currenciesArr) => {
+  compareCurrencies: (currencies = []) => {
+    return new Promise((resolve, reject) => {
+
+      if (currencies.length === 0) {
+        reject('Must pass at least one Currency');
+        return;
+      }
+
+      const abbr = currencies[0].abbreviation;
+      const isCurrencyAndSameType = currencies.every((c) => {
+        return (c instanceof Currency) && (c.abbreviation === abbr);
+      });
+
+      if (!isCurrencyAndSameType) {
+        reject('Only Currency Classes of the same type may be compared');
+      }
+
+      if (currencies.length === 1) {
+        resolve(currencies);
+      }
+
+      // COMPARE
+      let lowest = Infinity;
+      const buckets = currencies.reduce((buckets, c) => {
+        const USDValue = c.USDValueInPennies;
+        buckets[USDValue] ? buckets[USDValue].push(c) : buckets[USDValue] = [c];
+        lowest = USDValue < lowest ? USDValue : lowest;
+        return buckets;
+      }, {});
+
+      resolve(buckets[lowest]);
+
+    });
+
   }
 
 };
