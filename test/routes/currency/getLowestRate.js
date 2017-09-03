@@ -14,8 +14,8 @@ chai.use(chaiHttp);
 const server = require('../../../src/server/app');
 
 const BASE_ROUTE = '/currency/getLowestRate';
-const CURRENCY_CODE = 'ETH'
-const CURRENCY_NAME = 'Etherium'
+const CURRENCY_CODE = 'ETH';
+const CURRENCY_NAME = 'Etherium';
 
 const tests = () => {
   describe('currency/getLowestRate', () => {
