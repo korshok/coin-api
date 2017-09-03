@@ -30,5 +30,5 @@ coin/getBestRate?market=<coin_pair> //ex: BTC_LTE
     - https://bittrex.com/api/v1.1/public/getticker?market=<type> // will need to call per currency pair
     - https://poloniex.com/public?command=returnOrderBook&currencyPair=BTC_NXT&depth=10 // will need to call per currency~~        
   1. ~~convert API results into Currency Classes~~
-  1. compare rates
-  1. return best rate and which exchange to get it from
+  1. ~~compare rates~~
+  1. ~~route that takes a currency, return best rate and which exchange to get it from~~

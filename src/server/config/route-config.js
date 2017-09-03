@@ -10,6 +10,7 @@
 
     // *** register routes *** //
 
+    app.use('/currency/', routes.currency);
     app.use('/auth/', routes.auth);
 
   };

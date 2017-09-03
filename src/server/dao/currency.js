@@ -1,4 +1,5 @@
 /*jshint -W030*/
+/*jshint -W117*/
 
 const Currency = require('../classes/Currency');
 const BittrexCurrency = require('../classes/BittrexCurrency');
@@ -15,7 +16,7 @@ currencyAbbrToNameMap.set('BTC', 'Bitcoin');
 const BITTREX_BASE_URL = 'https://bittrex.com/api/v1.1/public';
 const POLONIEX_BASE_URL = 'https://poloniex.com/public';
 
-module.exports = {
+module.exports = _this = {
   getCurrencyFromBittrex: (currencyCode) => {
     return new Promise((resolve, reject) => {
 
@@ -91,6 +92,41 @@ module.exports = {
 
     });
 
+  },
+
+  getLowestRate: (req, res, next) => {
+
+    const currencyCode = req.params.currencyCode;
+
+    if (!currencyAbbrToNameMap.get(currencyCode)) {
+      res.status(200).json({
+        message: `Sorry, we do not have data for ${currencyCode}.`
+      });
+      return;
+    }
+
+    const bittrexPromise = _this.getCurrencyFromBittrex(currencyCode);
+    const poloniexPromise = _this.getCurrencyFromPoloniex(currencyCode);
+
+    Promise.all([
+      bittrexPromise,
+      poloniexPromise
+    ])
+    .then((results) => {
+      return _this.compareCurrencies(results);
+    })
+    .then((lowestArr) => {
+      res.status(200).json({
+        data: lowestArr,
+        message: 'Success!'
+      });
+    })
+    .catch((err) => {
+      res.status(500).json({
+        message: 'Sorry, we goofed up.',
+        err: err
+      });
+    });
   }
 
 };
