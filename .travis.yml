@@ -1,11 +1,10 @@
 language: node_js
 node_js:
-- '8'
 - '7'
-- '6'
 before_script:
 - npm install mocha -g
+- sleep 15
 script:
 - mocha
 services:
-- mongo
+- mongodb
