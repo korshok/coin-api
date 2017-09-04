@@ -9,7 +9,7 @@ const auth = {
     const playload = {
       exp: moment().add(14, 'days').unix(),
       iat: moment().unix(),
-      sub: user.id,
+      sub: user._id,
       username: user.username
     };
     return jwt.sign(playload, process.env.TOKEN_SECRET);
@@ -20,7 +20,6 @@ const auth = {
     const payload = jwt.verify(token, process.env.TOKEN_SECRET);
     const now = moment().unix();
     return new Promise((resolve, reject) => {
-      // TODO what does jwt verify return if token is invalid?
       if (!payload) {
         reject('Invalid token.');
       } else if (payload.exp && now > payload.exp) {
@@ -45,50 +44,39 @@ const auth = {
     var header = req.headers.authorization.split(' ');
     var token = header[1];
     auth.decodeToken(token)
-      .then((payload) => {
-        return db.users.findOne({_id: payload.sub})
-          .then((user) => {
-            req.user = {_id: user.id};
-            next();
-          });
-      })
-      .catch((err) => {
-        return res.status(401).json({
-          message: err
-        });
+    .then((payload) => {
+      return db.users.findOne({_id: payload.sub});
+    })
+    .then((user) => {
+      req.userId = user._id;
+      next();
+    })
+    .catch((err) => {
+      return res.status(401).json({
+        message: err
       });
+    });
   },
 
   createUser(user) {
     return new Promise((resolve, reject) => {
-      this.handleUserErrors(user)
-        .then(() => {
-          const salt = bcrypt.genSaltSync();
-          const hash = bcrypt.hashSync(user.password, salt);
-          new db.user({
-            username: user.username,
-            password: hash
-          })
-          .save()
-          .then(resolve)
-          .catch(reject);
+      this.userValidation(user)
+      .then(() => {
+        const salt = bcrypt.genSaltSync();
+        const hash = bcrypt.hashSync(user.password, salt);
+        new db.user({
+          username: user.username,
+          password: hash
         })
+        .save()
+        .then(resolve)
         .catch(reject);
+      })
+      .catch(reject);
     });
   },
 
-  editUser(user, id) {
-    return this.handleUserErrors(user).then(() => {
-      const salt = bcrypt.genSaltSync();
-      const hash = bcrypt.hashSync(user.password, salt);
-      return db.users.findOneAndUpdate({id: id}, {
-        username: user.username,
-        password: hash
-      });
-    });
-  },
-
-  handleUserErrors(user) {
+  userValidation(user) {
     return new Promise((resolve,reject) => {
       if (user.username.length < 6) {
         reject({
@@ -108,20 +96,24 @@ const auth = {
 
   registerUser(req, res, next) {
     auth.createUser(req.body.user)
-      .then((user) => { return auth.encodeToken(user); })
-      .then((token) => {
-        res.status(200).json({
-          message: `Success. '${req.body.user.username}' has been created.`,
-          token: token
-        });
-      })
-      .catch((err) => {
-        if (err) {
-          res.status(400).json(err);
+    .then((user) => { return auth.encodeToken(user); })
+    .then((token) => {
+      res.status(200).json({
+        message: `Success. '${req.body.user.username}' has been created.`,
+        token: token
+      });
+    })
+    .catch((err) => {
+      if (err) {
+        if ((err.code === 11000) && err.errmsg.includes('username')) {
+          res.status(400).json({message: `Please choose a different 'username'.`});
         } else {
           res.status(400).json({message: 'Regsitration failed'});
         }
-      });
+      } else {
+        res.status(400).json({message: 'Regsitration failed'});
+      }
+    });
   },
 
   login(req, res, next) {
@@ -145,9 +137,9 @@ const auth = {
   },
 
   getCurrentUser(req, res) {
-    db.users.findOne({id: parseInt(req.user.id)})
+    db.users.findOne({_id: req.userId})
     .then((user) => {
-      let result = Object.assign({}, user);
+      let result = Object.assign({}, user._doc);
       delete result.password;
       res.status(200).json({data: result});
     })

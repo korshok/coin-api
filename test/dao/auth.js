@@ -19,7 +19,7 @@ const tests = () => {
   describe('encodeToken()', () => {
 
     it('should return a token', (done) => {
-      const results = auth.encodeToken({id: 1});
+      const results = auth.encodeToken({_id: 1});
       should.exist(results);
       results.should.be.a('string');
       done();
@@ -29,16 +29,17 @@ const tests = () => {
 
   describe('decodeToken()', () => {
 
-    it('should return a token', () => {
-      const token = auth.encodeToken({id: 1, username: 'user123'});
+    it('should return a token', (done) => {
+      const token = auth.encodeToken({_id: 1, username: 'user123'});
       should.exist(token);
-      return auth.decodeToken(token)
+      auth.decodeToken(token)
         .then((result) => {
           result.sub.should.eql(1);
           result.username.should.eql('user123');
+          done();
         })
         .catch((err) => {
-          err.should.not.exist;
+          done(err);
         });
     });
   });
@@ -71,6 +72,7 @@ const tests = () => {
           res.status.should.eql(200);
           res.type.should.eql('application/json');
           res.body.data.should.exist;
+          res.body.data.username.should.equal('user123');
           should.not.exist(res.body.data.password);
           done();
         });

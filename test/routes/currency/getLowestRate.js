@@ -6,6 +6,7 @@ process.env.NODE_ENV = 'test';
 
 const db = require('../../../src/db/connection');
 const chai = require('chai');
+const sinon = require('sinon');
 const should = chai.should();
 const expect = chai.expect;
 const chaiHttp = require('chai-http');
@@ -25,15 +26,17 @@ const tests = () => {
       it('should return error if no parameter is passed', (done) => {
         chai.request(server)
         .get(`${BASE_ROUTE}`)
+        .set('authorization', 'Bearer fake.Token.fakeToken')
         .end((err, res) => {
           expect(res.status).to.equal(404);
           done();
         });
       });
 
-      it('should return error if the curreny code could not be found', (done) => {
+      it('should return error if the currency code could not be found', (done) => {
         chai.request(server)
         .get(`${BASE_ROUTE}/OMT`)
+        .set('authorization', 'Bearer fake.Token.fakeToken')
         .end((err, res) => {
           expect(res.status).to.equal(200);
           expect(res.body.message).to.equal(`Sorry, we do not have data for OMT.`);
@@ -51,6 +54,7 @@ const tests = () => {
       before((done) => {
         chai.request(server)
         .get(`${BASE_ROUTE}/${CURRENCY_CODE}`)
+        .set('authorization', 'Bearer fake.Token.fakeToken')
         .end((err, res) => {
           error = err;
           response = res;
