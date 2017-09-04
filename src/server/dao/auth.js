@@ -45,11 +45,11 @@ const auth = {
     var token = header[1];
     auth.decodeToken(token)
     .then((payload) => {
-      return db.users.findOne({_id: payload.sub})
-        .then((user) => {
-          req.userId = user._id;
-          next();
-        });
+      return db.users.findOne({_id: payload.sub});
+    })
+    .then((user) => {
+      req.userId = user._id;
+      next();
     })
     .catch((err) => {
       return res.status(401).json({
