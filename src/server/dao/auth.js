@@ -10,7 +10,7 @@ const auth = {
       exp: moment().add(14, 'days').unix(),
       iat: moment().unix(),
       sub: user._id,
-      username: user.username
+      username: user.username // do you need this?
     };
     return jwt.sign(playload, process.env.TOKEN_SECRET);
   },
@@ -31,7 +31,7 @@ const auth = {
   },
 
   comparePass(userpass, dbpass) {
-    bcrypt.compareSync(userpass, dbpass);
+    return bcrypt.compare(userpass, dbpass);
   },
 
   checkAuthentication(req, res, next) {
@@ -117,14 +117,18 @@ const auth = {
   },
 
   login(req, res, next) {
+    let user;
     const username = req.body.user.username;
     const password = req.body.user.password;
     return db.users.findOne({username})
-    .then((user) => {
-      auth.comparePass(password, user.password);
-      return user;
+    .then((dbUser) => {
+      user = dbUser;
+      return auth.comparePass(password, user.password);
     })
-    .then((user) => { return auth.encodeToken(user); })
+    .then((result) => {
+      if (!result) throw new Error();
+      return auth.encodeToken(user);
+    })
     .then((token) => {
       res.status(200).json({
         message: 'Success',

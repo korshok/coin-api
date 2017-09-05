@@ -41,6 +41,46 @@ const tests = () => {
       });
     });
 
+    describe('error: wrong password', () => {
+
+      user = {
+        username: 'user123',
+        password: 'pass123'
+      };
+
+      before((done) => {
+        chai.request(server)
+        .post('/auth/register')
+        .send({user})
+        .end((err, res) => {
+          done();
+        });
+
+      });
+
+      after((done) => {
+        db.user.remove().then(() => {
+          done();
+        });
+      });
+
+      it('should login a user', (done) => {
+        chai.request(server)
+        .post('/auth/login')
+        .send({user: {
+            username: 'user123',
+            password: 'wrongPass'
+          }
+        })
+        .end((err, res) => {
+          err.should.exist;
+          res.status.should.equal(400);
+          res.body.message.should.equal('Login failed.');
+          done();
+        });
+      });
+    });
+
     describe('success', () => {
 
       const user = {
@@ -74,7 +114,9 @@ const tests = () => {
         });
       });
     });
+
   });
+
 };
 
 if (process.env.NODE_ENV === 'test') {

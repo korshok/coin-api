@@ -5,7 +5,25 @@
 
 Authenticated API that allows the consumer to compare crypto currency prices between exchanges.
 
-If you would like a front end to consume this API, go over to [github.com/topleft/coin-client](https://github.com/topleft/coin-client).
+If you would like a front-end to consume this API, go over to [github.com/topleft/coin-client](https://github.com/topleft/coin-client).
+
+
+### Dev Notes
+
+#### Base Code:  
+
+The basic scaffolding of this Node Express API started with a custom Yeomon express generator, and custom JWT Auth that I wrote for a previous project.
+
+For this project I swapped out the existing Postgres/Knex configuration with Mongo/Mongoose and did the necessary refactoring.
+
+All of this application was written using a Test Driven approach. The repository is synced with Travis-CI.
+
+Some things that I would like to expand upon:
+  - refactor to use async/await
+  - expand available currency type by pulling from the Bittrex API
+  - add more currency exchanges to compare rates
+  - compare rates over a time span
+
 
 ### Run locally:
 

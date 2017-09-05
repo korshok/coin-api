@@ -7,11 +7,11 @@ const PoloniexCurrency = require('../classes/PoloniexCurrency');
 const axios = require('axios');
 
 // TODO - make module that pulls from https://bittrex.com/api/v1.1/public/getcurrencies
-const currencyAbbrToNameMap = new Map();
-currencyAbbrToNameMap.set('ETH', 'Etherium');
-currencyAbbrToNameMap.set('LTC', 'Litecoin');
-currencyAbbrToNameMap.set('DASH', 'Dash');
-currencyAbbrToNameMap.set('BTC', 'Bitcoin');
+const currencyCodeToNameMap = new Map();
+currencyCodeToNameMap.set('ETH', 'Etherium');
+currencyCodeToNameMap.set('LTC', 'Litecoin');
+currencyCodeToNameMap.set('DASH', 'Dash');
+currencyCodeToNameMap.set('BTC', 'Bitcoin');
 
 const BITTREX_BASE_URL = 'https://bittrex.com/api/v1.1/public';
 const POLONIEX_BASE_URL = 'https://poloniex.com/public';
@@ -26,7 +26,7 @@ module.exports = _this = {
       .then((result) => {
         const data = result.data;
         data.abbreviation = currencyCode;
-        data.name = currencyAbbrToNameMap.get(currencyCode);
+        data.name = currencyCodeToNameMap.get(currencyCode);
         resolve(new BittrexCurrency(data));
       })
       .catch(reject);
@@ -43,7 +43,7 @@ module.exports = _this = {
       .then((result) => {
         const data = result.data[`USDT_${currencyCode}`];
         data.abbreviation = currencyCode;
-        data.name = currencyAbbrToNameMap.get(currencyCode);
+        data.name = currencyCodeToNameMap.get(currencyCode);
         resolve(new PoloniexCurrency(data));
       })
       .catch(reject);
@@ -91,7 +91,7 @@ module.exports = _this = {
 
     const currencyCode = req.params.currencyCode;
 
-    if (!currencyAbbrToNameMap.get(currencyCode)) {
+    if (!currencyCodeToNameMap.get(currencyCode)) {
       res.status(200).json({
         message: `Sorry, we do not have data for ${currencyCode}.`
       });
