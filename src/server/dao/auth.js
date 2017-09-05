@@ -141,7 +141,7 @@ const auth = {
     .then((user) => {
       let result = Object.assign({}, user._doc);
       delete result.password;
-      res.status(200).json({data: result});
+      res.status(200).json({data: result, message: 'Success'});
     })
     .catch((err) => {
       res.status(500).json({err: 'not-found', message: 'An error ocurred while getting the current user.'});
