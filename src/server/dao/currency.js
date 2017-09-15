@@ -4,52 +4,9 @@
 const Currency = require('../classes/Currency');
 const BittrexCurrency = require('../classes/BittrexCurrency');
 const PoloniexCurrency = require('../classes/PoloniexCurrency');
-const axios = require('axios');
-
-// TODO - make module that pulls from https://bittrex.com/api/v1.1/public/getcurrencies
-const currencyCodeToNameMap = new Map();
-currencyCodeToNameMap.set('ETH', 'Etherium');
-currencyCodeToNameMap.set('LTC', 'Litecoin');
-currencyCodeToNameMap.set('DASH', 'Dash');
-currencyCodeToNameMap.set('BTC', 'Bitcoin');
-
-const BITTREX_BASE_URL = 'https://bittrex.com/api/v1.1/public';
-const POLONIEX_BASE_URL = 'https://poloniex.com/public';
+const currencyCodeToNameMap = require('../helpers/currencyCodes');
 
 module.exports = _this = {
-  getCurrencyFromBittrex: (currencyCode) => {
-    return new Promise((resolve, reject) => {
-
-      const promise = axios.get(`${BITTREX_BASE_URL}/getticker?market=USDT-${currencyCode}`);
-
-      promise
-      .then((result) => {
-        const data = result.data;
-        data.abbreviation = currencyCode;
-        data.name = currencyCodeToNameMap.get(currencyCode);
-        resolve(new BittrexCurrency(data));
-      })
-      .catch(reject);
-
-    });
-  },
-
-  getCurrencyFromPoloniex: (currencyCode) => {
-    return new Promise((resolve, reject) => {
-
-      const promise = axios.get(`${POLONIEX_BASE_URL}?command=returnTicker`);
-
-      promise
-      .then((result) => {
-        const data = result.data[`USDT_${currencyCode}`];
-        data.abbreviation = currencyCode;
-        data.name = currencyCodeToNameMap.get(currencyCode);
-        resolve(new PoloniexCurrency(data));
-      })
-      .catch(reject);
-
-    });
-  },
 
   compareCurrencies: (currencies = []) => {
     return new Promise((resolve, reject) => {
@@ -98,15 +55,15 @@ module.exports = _this = {
       return;
     }
 
-    const bittrexPromise = _this.getCurrencyFromBittrex(currencyCode);
-    const poloniexPromise = _this.getCurrencyFromPoloniex(currencyCode);
+    const bittrexCurrency = new BittrexCurrency();
+    const poloniexCurrency = new PoloniexCurrency();
 
     Promise.all([
-      bittrexPromise,
-      poloniexPromise
+      bittrexCurrency.getRate(currencyCode),
+      poloniexCurrency.getRate(currencyCode)
     ])
-    .then((results) => {
-      return _this.compareCurrencies(results);
+    .then(() => {
+      return _this.compareCurrencies([bittrexCurrency, poloniexCurrency]);
     })
     .then((lowestArr) => {
       res.status(200).json({

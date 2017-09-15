@@ -11,7 +11,8 @@ const should = chai.should();
 const expect = chai.expect;
 chai.use(chaiAsPromised);
 
-const currency = require('../../src/server/dao/currency');
+const BittrexCurrency = require('../../src/server/classes/BittrexCurrency');
+const PoloniexCurrency = require('../../src/server/classes/PoloniexCurrency');
 
 const tests = () => {
 
@@ -20,73 +21,65 @@ const tests = () => {
 
   describe('BITTREX API: https://bittrex.com/api/v1.1/public/getticker',() => {
 
-    let result;
+    let bittrexCurrency;
 
     before((done) => {
-      result = currency.getCurrencyFromBittrex(currencyCode);
-      done();
+      bittrexCurrency = new BittrexCurrency();
+      bittrexCurrency.getRate(currencyCode).then(() => done()).catch(done);
     });
 
     it('should create and return instance of the currency class', () => {
-      return result.should.eventually.be.an.instanceof(Currency);
+      return bittrexCurrency.should.be.an.instanceof(Currency);
     });
 
     it('should return a Currency class with the \'name\' property', () => {
-      return result.should.eventually.have.property('name').that.equals(name);
+      return bittrexCurrency.should.have.property('name').that.equals(name);
     });
 
     it('should return a Currency class with the \'abbreviation\' property', () => {
-      return result.should.eventually.have.property('abbreviation').that.equals(currencyCode);
+      return bittrexCurrency.should.have.property('abbreviation').that.equals(currencyCode);
     });
 
     it('should return a Currency class with the \'USDValueInPennies\' property', () => {
-      return result.should.eventually.have.property('USDValueInPennies');
+      return bittrexCurrency.should.have.property('USDValueInPennies');
     });
 
     // HEADUP - usig done call back here b/c i needed access to the return value
-    it('should create a valid currency class', (done) => {
-      result.then((currency) => {
-        currency.validate().isValid.should.be.true;
-        done();
-      })
-      .catch(done);
+    it('should create a valid currency class', () => {
+      return bittrexCurrency.validate().isValid.should.be.true;
     });
 
   });
 
   describe('POLONIEX API: https://poloniex.com/public?command=returnTicker', () => {
 
-    let result;
+    let poloniexCurrency;
     const currencyCode = 'ETH';
 
     before((done) => {
-      result = currency.getCurrencyFromPoloniex(currencyCode);
-      done();
+      poloniexCurrency = new PoloniexCurrency();
+      poloniexCurrency.getRate(currencyCode).then(() => done()).catch(done);
     });
 
     it('should create and return instance of the currency class', () => {
-      return result.should.eventually.be.an.instanceof(Currency);
+      return poloniexCurrency.should.be.an.instanceof(Currency);
     });
 
     it('should return a Currency class with the \'name\' property', () => {
-      return result.should.eventually.have.property('name').that.equals(name);
+      return poloniexCurrency.should.have.property('name').that.equals(name);
     });
 
     it('should return a Currency class with the \'abbreviation\' property', () => {
-      return result.should.eventually.have.property('abbreviation').that.equals(currencyCode);
+      return poloniexCurrency.should.have.property('abbreviation').that.equals(currencyCode);
     });
 
     it('should return a Currency class with the \'USDValueInPennies\' property', () => {
-      return result.should.eventually.have.property('USDValueInPennies');
+      return poloniexCurrency.should.have.property('USDValueInPennies');
     });
 
     // HEADUP - usig done call back here b/c i needed access to the return value
-    it('should create a valid currency class', (done) => {
-      result.then((currency) => {
-        currency.validate().isValid.should.be.true;
-        done();
-      })
-      .catch(done);
+    it('should create a valid currency class', () => {
+      return poloniexCurrency.validate().isValid.should.be.true;
     });
 
   });
