@@ -11,8 +11,8 @@ const should = chai.should();
 const expect = chai.expect;
 chai.use(chaiAsPromised);
 
-const BittrexCurrency = require('../../src/server/classes/BittrexCurrency');
-const PoloniexCurrency = require('../../src/server/classes/PoloniexCurrency');
+const BittrexExchange = require('../../src/server/classes/BittrexExchange');
+const PoloniexExchange = require('../../src/server/classes/PoloniexExchange');
 
 const tests = () => {
 
@@ -24,8 +24,13 @@ const tests = () => {
     let bittrexCurrency;
 
     before((done) => {
-      bittrexCurrency = new BittrexCurrency();
-      bittrexCurrency.getRate(currencyCode).then(() => done()).catch(done);
+      bittrexExchange = new BittrexExchange();
+      bittrexExchange.getRate(currencyCode)
+        .then((result) => {
+          bittrexCurrency = result;
+          done();
+        })
+        .catch(done);
     });
 
     it('should create and return instance of the currency class', () => {
@@ -57,8 +62,13 @@ const tests = () => {
     const currencyCode = 'ETH';
 
     before((done) => {
-      poloniexCurrency = new PoloniexCurrency();
-      poloniexCurrency.getRate(currencyCode).then(() => done()).catch(done);
+      poloniexExchange = new PoloniexExchange();
+      poloniexExchange.getRate(currencyCode)
+      .then((result) => {
+        poloniexCurrency = result;
+        done();
+      })
+      .catch(done);
     });
 
     it('should create and return instance of the currency class', () => {

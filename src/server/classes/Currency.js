@@ -30,6 +30,14 @@ module.exports = (function() {
       };
     }
 
+    getUSDValueInDollars() {
+      if (this.validate('USDValueInPennies').isValid) {
+        return (this.USDValueInPennies / 100).toString();
+      } else {
+        return NaN;
+      }
+    }
+
     validate(key) {
       let errors = [];
       const result = {};
@@ -49,14 +57,6 @@ module.exports = (function() {
         result.isValid = true;
       }
       return result;
-    }
-
-    getUSDValueInDollars() {
-      if (this.validate('USDValueInPennies').isValid) {
-        return (this.USDValueInPennies / 100).toString();
-      } else {
-        return NaN;
-      }
     }
 
   }

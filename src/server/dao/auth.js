@@ -16,7 +16,6 @@ const auth = {
   },
 
   decodeToken(token) {
-    // is jwt verify async?
     const payload = jwt.verify(token, process.env.TOKEN_SECRET);
     const now = moment().unix();
     return new Promise((resolve, reject) => {

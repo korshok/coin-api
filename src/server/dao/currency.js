@@ -2,8 +2,7 @@
 /*jshint -W117*/
 
 const Currency = require('../classes/Currency');
-const BittrexCurrency = require('../classes/BittrexCurrency');
-const PoloniexCurrency = require('../classes/PoloniexCurrency');
+const exchangeClasses = require('../classes/exchanges');
 const currencyCodeToNameMap = require('../helpers/currencyCodes');
 
 module.exports = _this = {
@@ -47,6 +46,8 @@ module.exports = _this = {
   getLowestRate: (req, res, next) => {
 
     const currencyCode = req.params.currencyCode;
+    // const exchanges = req.params.exchanges;
+    const exchanges = ['Bittrex', 'Poloniex'];
 
     if (!currencyCodeToNameMap.get(currencyCode)) {
       res.status(200).json({
@@ -55,19 +56,23 @@ module.exports = _this = {
       return;
     }
 
-    const bittrexCurrency = new BittrexCurrency();
-    const poloniexCurrency = new PoloniexCurrency();
-
-    Promise.all([
-      bittrexCurrency.getRate(currencyCode),
-      poloniexCurrency.getRate(currencyCode)
-    ])
-    .then(() => {
-      return _this.compareCurrencies([bittrexCurrency, poloniexCurrency]);
-    })
-    .then((lowestArr) => {
+    // make error message more specific
+    if (!exchanges.every((e) => exchangeClasses[e])) {
       res.status(200).json({
-        data: lowestArr,
+        message: `Sorry, we do support one or more of these excahnges.`
+      });
+      return;
+    }
+
+    const ratePromises = exchanges.map((e) => new exchangeClasses[e]().getRate(currencyCode));
+
+    Promise.all(ratePromises)
+    .then((rates) => {
+      return _this.compareCurrencies(rates);
+    })
+    .then((lowestRates) => {
+      res.status(200).json({
+        data: lowestRates,
         message: 'Success!'
       });
     })
