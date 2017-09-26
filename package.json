@@ -2,8 +2,7 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "knex": "knex",
-    "start": "gulp --gulpfile ./gulpfile.js",
+    "start": "node ./src/server/server.js",
     "test": "source .env-test && './node_modules/mocha/bin/_mocha' './test/runner.test.js'"
   },
   "dependencies": {
