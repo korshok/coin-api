@@ -36,7 +36,7 @@ Some things that I would like to expand upon:
   ```sh
 
     export NODE_ENV=development
-    export TOkEN_SECRET=super_secret
+    export TOKEN_SECRET=super_secret
     export COIN_DB_DEV=mongodb://localhost/api
   ```
 1. `$ gulp`
@@ -143,7 +143,7 @@ _Glad you asked :)_
   ```sh
 
     export NODE_ENV=development
-    export TOkEN_SECRET=super_secret
+    export TOKEN_SECRET=super_secret
     export COIN_DB_DEV=mongodb://localhost/api
   ```
 1. `$ npm test`
